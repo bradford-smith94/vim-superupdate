@@ -1,1 +1,17 @@
-*superupdate.txt*
+*superupdate.txt* Automatically update your Vim plugins
+*superupdate*
+
+This plugin requires the '!' option of |'viminfo'| to be set.
+
+=============================================================================
+INTRODUCTION
+
+This plugin integrates with your Vim plugin manager to automatically check
+for and update your plugins.
+
+-----------------------------------------------------------------------------
+ISSUES
+
+Currently only supports Vundle.
+
+ vim:tw=78:ft=help:norl:

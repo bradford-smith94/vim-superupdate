@@ -1,45 +1,88 @@
 " superupdate.vim
 
-if exists("g:loaded_superupdate")
+if exists("g:superupdate#included")
     finish
 endif
-let g:loaded_superupdate = 1
+let g:superupdate#included = 1
+
+runtime ./vim-logger/logger.vim
+
+" ====================================================================== const =
+let s:INTEGER = 0
+let s:SHORT = 1
+let s:LONG = 2
+
+let s:SECOND = 1
+let s:MINUTE = 60 * s:SECOND
+let s:HOUR = 60 * s:MINUTE
+let s:DAY = 24 * s:HOUR
+let s:WEEK = 7 * s:DAY
+
+" ==================================================================== helpers =
+
+" ----------------------------------------- ( type = s:INTEGER ) - s:DayOfWeek -
+" obtain the day of week as an integer, three letter abbreviation or full name
+function! s:DayOfWeek ( ... )
+    if a:0 > 1
+        call WARN("DayOfWeek expects one or no parameters; found", a:0)
+    endif
+    let l:type = a:0 > 0 ? a:1 : s:INTEGER
+    if l:type == s:INTEGER
+        return strftime("%u") - 1
+    elseif l:type == s:SHORT
+        return strftime("%a")
+    elseif l:type == s:LONG
+        return strftime("%A")
+    endif
+    call WARN("DayOfWeek unknown type", l:type)
+    return -1
+endfunction
+
+" ---------------------------------------------------------- ( ) - s:Timestamp -
+" retrieve timestamp in seconds from epoch
+function! s:Timestamp ( )
+    return str2nr(strftime("%s"))
+endfunction
+
+" ==================================================================== autocmd =
 
 augroup superupdate_autocmds
     autocmd!
     "check for updates when Vim starts
-    autocmd VimEnter * call CheckForUpdate()
+    autocmd VimEnter * call g:superupdate#CheckForUpdate()
 
     "save update date if user runs an update manually
     autocmd BufDelete * if &previewwindow && &ft == "vundle" |
-                \ call SaveLastUpdate() | endif
+                \ call g:superupdate#SaveLastUpdate() | endif
 augroup END
 
-"function to save today's date as YYYYMMDD
-function! SaveLastUpdate()
-    let g:LAST_UPDATE = str2nr(strftime("%Y%m%d"))
+" ----------------------------------------- ( ) - g:superupdate#SaveLastUpdate -
+" save current timestamp
+function! g:superupdate#SaveLastUpdate()
+    call INFO("SuperUpdate: update complete")
+    let g:superupdate#last_update = s:Timestamp()
 endfunction
 
-"function to update plugins
-function! UpdatePlugins()
+" ------------------------------------------ ( ) - g:superupdate#UpdatePlugins -
+" update plugins
+function! g:superupdate#UpdatePlugins()
     "Vundle
+    call INFO("SuperUpdate: update starting")
     PluginUpdate
 endfunction
 
-"function to check when the last time plugins were automatically updated and
-"update them if it has been more than a week and it is currently the weekend
-function! CheckForUpdate()
-    if exists("g:LAST_UPDATE")
-        if ((str2nr(strftime("%Y%m%d")) - g:LAST_UPDATE) >= 7)
-            if (strftime("%a") == "Fri" ||
-                        \ strftime("%a") == "Sat" ||
-                        \ strftime("%a") == "Sun")
-                call UpdatePlugins()
-                call SaveLastUpdate()
-            endif
-        endif
-    else
-        call UpdatePlugins()
-        call SaveLastUpdate()
+" ----------------------------------------- ( ) - g:superupdate#CheckForUpdate -
+" check when the last time plugins were automatically updated and
+" update them if it has been more than a week and it is currently the weekend
+function! g:superupdate#CheckForUpdate()
+    if exists("g:superupdate#last_update") &&
+     \ s:Timestamp() - g:superupdate#last_update < s:WEEK ||
+     \ s:DayOfWeek() < 4
+        " only run after 7 days and on Fri, Sat or Sun
+        return
     endif
+
+    call g:superupdate#UpdatePlugins()
+    call g:superupdate#SaveLastUpdate()
 endfunction
+

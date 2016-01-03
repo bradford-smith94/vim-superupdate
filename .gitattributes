@@ -65,6 +65,8 @@ CHANGELOG text
 
 ## CRLF => CRLF, LF => LF
 
+.gitignore binary
+
 *.png binary
 *.jpg binary
 *.jpeg binary

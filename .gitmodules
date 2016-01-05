@@ -1,0 +1,8 @@
+[submodule "plugin/vim-logger"]
+	path = plugin/vim-logger
+	url = https://github.com/tsu-complete/vim-logger
+	tag = stable
+[submodule "plugin/vim-vimvar"]
+	path = plugin/vim-vimvar
+	url = https://github.com/tsu-complete/vim-vimvar
+	tag = stable

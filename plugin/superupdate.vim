@@ -6,6 +6,7 @@ endif
 let g:superupdate#included = 1
 
 runtime ./vim-logger/logger.vim
+runtime ./vim-vimvar/vimvar.vim
 
 " ====================================================================== const =
 let s:INTEGER = 0
@@ -17,6 +18,8 @@ let s:MINUTE = 60 * s:SECOND
 let s:HOUR = 60 * s:MINUTE
 let s:DAY = 24 * s:HOUR
 let s:WEEK = 7 * s:DAY
+
+let s:UPDATE_KEY = "superupdate#last_update"
 
 " ==================================================================== helpers =
 
@@ -60,7 +63,7 @@ augroup END
 " save current timestamp
 function! g:superupdate#SaveLastUpdate()
     call INFO("SuperUpdate: update complete")
-    let g:superupdate#last_update = s:Timestamp()
+    call VarSave(s:UPDATE_KEY, s:Timestamp())
 endfunction
 
 " ------------------------------------------ ( ) - g:superupdate#UpdatePlugins -
@@ -75,10 +78,12 @@ endfunction
 " check when the last time plugins were automatically updated and
 " update them if it has been more than a week and it is currently the weekend
 function! g:superupdate#CheckForUpdate()
-    if exists("g:superupdate#last_update") &&
-     \ s:Timestamp() - g:superupdate#last_update < s:WEEK ||
+    let l:last_update = VarRead(s:UPDATE_KEY)
+    if l:last_update != 0 &&
+     \ s:Timestamp() - l:last_update < s:WEEK ||
      \ s:DayOfWeek() < 4
         " only run after 7 days and on Fri, Sat or Sun
+        " or if never updated (no update timestamp exists)
         return
     endif
 

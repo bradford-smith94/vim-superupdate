@@ -3,9 +3,6 @@
 *vim-superupdate*
 *superupdate.vim*
 
-This plugin requires the '!' option of |'viminfo'| to be set.
-See |viminfo-!|
-
 =============================================================================
 INTRODUCTION
 

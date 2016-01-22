@@ -21,6 +21,24 @@ let s:WEEK = 7 * s:DAY
 
 let s:UPDATE_KEY = "superupdate#last_update"
 
+" ======================================================================= vars =
+" warn - print a message instead of updating plugins
+if !exists("g:superupdate#warn")
+    let g:superupdate#warn = 0
+endif
+
+" interval - the number of days between updates
+if !exists("g:superupdate#interval")
+    let g:superupdate#interval = 7
+endif
+
+" days - list of days when updates are allowed (empty should be the same as all)
+" NOTE: lists require Vim7+
+if !exists("g:superupdate#days")
+    let g:superupdate#days = []
+endif
+
+
 " ==================================================================== helpers =
 
 " ----------------------------------------- ( type = s:INTEGER ) - s:DayOfWeek -

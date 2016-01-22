@@ -10,6 +10,21 @@ This plugin integrates with your Vim plugin manager to automatically check
 for and update your plugins.
 
 -----------------------------------------------------------------------------
+REQUIRES
+
+Vim7 or above.
+
+-----------------------------------------------------------------------------
+CONFIGURATION
+
+g:superdate#warn
+Print a warning message when plugins would be updated instead of actually
+updating them.
+
+g:superdate#interval
+The number of days between updates.
+
+-----------------------------------------------------------------------------
 ISSUES
 
 Currently only supports Vundle.

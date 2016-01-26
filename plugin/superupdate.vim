@@ -31,6 +31,7 @@ endif
 if !exists("g:superupdate#interval")
     let g:superupdate#interval = 7
 endif
+let s:UPDATE_INTERVAL = g:superupdate#interval * s:DAY
 
 " days - list of days when updates are allowed (empty should be the same as all)
 " NOTE: lists require Vim7+
@@ -80,16 +81,22 @@ augroup END
 " ----------------------------------------- ( ) - g:superupdate#SaveLastUpdate -
 " save current timestamp
 function! g:superupdate#SaveLastUpdate()
-    call INFO("SuperUpdate: update complete")
-    call VarSave(s:UPDATE_KEY, s:Timestamp())
+    if g:superupdate#warn == 0
+        call INFO("SuperUpdate: update complete")
+        call VarSave(s:UPDATE_KEY, s:Timestamp())
+    endif
 endfunction
 
 " ------------------------------------------ ( ) - g:superupdate#UpdatePlugins -
 " update plugins
 function! g:superupdate#UpdatePlugins()
-    "Vundle
-    call INFO("SuperUpdate: update starting")
-    PluginUpdate
+    if g:superupdate#warn == 0
+        call INFO("SuperUpdate: update starting")
+        "Vundle
+        PluginUpdate
+    else
+        echom "SuperUpdate: Plugins have not been updated in: " . g:superupdate#interval . " day(s)"
+    endif
 endfunction
 
 " ----------------------------------------- ( ) - g:superupdate#CheckForUpdate -
@@ -98,9 +105,9 @@ endfunction
 function! g:superupdate#CheckForUpdate()
     let l:last_update = VarRead(s:UPDATE_KEY)
     if l:last_update != 0 &&
-     \ s:Timestamp() - l:last_update < s:WEEK ||
+     \ s:Timestamp() - l:last_update < s:UPDATE_INTERVAL ||
      \ s:DayOfWeek() < 4
-        " only run after 7 days and on Fri, Sat or Sun
+        " only run after update interval and on Fri, Sat or Sun
         " or if never updated (no update timestamp exists)
         return
     endif

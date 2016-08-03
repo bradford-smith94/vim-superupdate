@@ -39,7 +39,6 @@ if !exists("g:superupdate#days")
     let g:superupdate#days = []
 endif
 
-
 " ==================================================================== helpers =
 
 " ----------------------------------------- ( type = s:INTEGER ) - s:DayOfWeek -
@@ -92,10 +91,16 @@ endfunction
 function! g:superupdate#UpdatePlugins()
     if g:superupdate#warn == 0
         call INFO("SuperUpdate: update starting")
-        "Vundle
-        PluginUpdate
+        if exists("g:superupdate#command")
+            execute g:superupdate#command
+        else
+            "TODO: detect plugin manager
+            "Vundle
+            PluginUpdate
+        endif
     else
-        echom "SuperUpdate: Plugins have not been updated in: " . g:superupdate#interval . " day(s)"
+        echom "SuperUpdate: Plugins have not been updated in more than: " .
+                    \ g:superupdate#interval . " day(s)"
     endif
 endfunction
 
@@ -106,9 +111,11 @@ function! g:superupdate#CheckForUpdate()
     let l:last_update = VarRead(s:UPDATE_KEY)
     if l:last_update != 0 &&
      \ s:Timestamp() - l:last_update < s:UPDATE_INTERVAL ||
-     \ s:DayOfWeek() < 4
-        " only run after update interval and on Fri, Sat or Sun
-        " or if never updated (no update timestamp exists)
+     \ (len(g:superupdate#days) > 0 &&
+     \ index(g:superupdate#days, s:DayOfWeek()) < 0)
+        " only run after update interval and on a day in g:superupdate#days if
+        " g:superupdate#days is not empty
+        " OR if never updated (no update timestamp exists)
         return
     endif
 

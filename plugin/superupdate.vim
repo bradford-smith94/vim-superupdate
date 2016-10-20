@@ -21,6 +21,24 @@ let s:WEEK = 7 * s:DAY
 
 let s:UPDATE_KEY = "superupdate#last_update"
 
+" ======================================================================= vars =
+" warn - print a message instead of updating plugins
+if !exists("g:superupdate#warn")
+    let g:superupdate#warn = 0
+endif
+
+" interval - the number of days between updates
+if !exists("g:superupdate#interval")
+    let g:superupdate#interval = 7
+endif
+let s:UPDATE_INTERVAL = g:superupdate#interval * s:DAY
+
+" days - list of days when updates are allowed (empty should be the same as all)
+" NOTE: lists require Vim7+
+if !exists("g:superupdate#days")
+    let g:superupdate#days = []
+endif
+
 " ==================================================================== helpers =
 
 " ----------------------------------------- ( type = s:INTEGER ) - s:DayOfWeek -
@@ -62,16 +80,28 @@ augroup END
 " ----------------------------------------- ( ) - g:superupdate#SaveLastUpdate -
 " save current timestamp
 function! g:superupdate#SaveLastUpdate()
-    call INFO("SuperUpdate: update complete")
-    call VarSave(s:UPDATE_KEY, s:Timestamp())
+    if g:superupdate#warn == 0
+        call INFO("SuperUpdate: update complete")
+        call VarSave(s:UPDATE_KEY, s:Timestamp())
+    endif
 endfunction
 
 " ------------------------------------------ ( ) - g:superupdate#UpdatePlugins -
 " update plugins
 function! g:superupdate#UpdatePlugins()
-    "Vundle
-    call INFO("SuperUpdate: update starting")
-    PluginUpdate
+    if g:superupdate#warn == 0
+        call INFO("SuperUpdate: update starting")
+        if exists("g:superupdate#command")
+            execute g:superupdate#command
+        else
+            "TODO: detect plugin manager
+            "Vundle
+            PluginUpdate
+        endif
+    else
+        echom "SuperUpdate: Plugins have not been updated in more than: " .
+                    \ g:superupdate#interval . " day(s)"
+    endif
 endfunction
 
 " ----------------------------------------- ( ) - g:superupdate#CheckForUpdate -
@@ -80,10 +110,12 @@ endfunction
 function! g:superupdate#CheckForUpdate()
     let l:last_update = VarRead(s:UPDATE_KEY)
     if l:last_update != 0 &&
-     \ s:Timestamp() - l:last_update < s:WEEK ||
-     \ s:DayOfWeek() < 4
-        " only run after 7 days and on Fri, Sat or Sun
-        " or if never updated (no update timestamp exists)
+     \ s:Timestamp() - l:last_update < s:UPDATE_INTERVAL ||
+     \ (len(g:superupdate#days) > 0 &&
+     \ index(g:superupdate#days, s:DayOfWeek()) < 0)
+        " only run after update interval and on a day in g:superupdate#days if
+        " g:superupdate#days is not empty
+        " OR if never updated (no update timestamp exists)
         return
     endif
 

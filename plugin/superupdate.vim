@@ -1,9 +1,9 @@
 " superupdate.vim
 
-if exists("g:superupdate#included")
+if exists("g:superupdate_included")
     finish
 endif
-let g:superupdate#included = 1
+let g:superupdate_included = 1
 
 runtime ./vim-logger/logger.vim
 runtime ./vim-vimvar/vimvar.vim
@@ -19,24 +19,24 @@ let s:HOUR = 60 * s:MINUTE
 let s:DAY = 24 * s:HOUR
 let s:WEEK = 7 * s:DAY
 
-let s:UPDATE_KEY = "superupdate#last_update"
+let s:UPDATE_KEY = "superupdate_last_update"
 
 " ======================================================================= vars =
 " warn - print a message instead of updating plugins
-if !exists("g:superupdate#warn")
-    let g:superupdate#warn = 0
+if !exists("g:superupdate_warn")
+    let g:superupdate_warn = 0
 endif
 
 " interval - the number of days between updates
-if !exists("g:superupdate#interval")
-    let g:superupdate#interval = 7
+if !exists("g:superupdate_interval")
+    let g:superupdate_interval = 7
 endif
-let s:UPDATE_INTERVAL = g:superupdate#interval * s:DAY
+let s:UPDATE_INTERVAL = g:superupdate_interval * s:DAY
 
 " days - list of days when updates are allowed (empty should be the same as all)
 " NOTE: lists require Vim7+
-if !exists("g:superupdate#days")
-    let g:superupdate#days = []
+if !exists("g:superupdate_days")
+    let g:superupdate_days = []
 endif
 
 " ==================================================================== helpers =
@@ -70,29 +70,29 @@ endfunction
 augroup superupdate_autocmds
     autocmd!
     "check for updates when Vim starts
-    autocmd VimEnter * call g:superupdate#CheckForUpdate()
+    autocmd VimEnter * call <SID>superupdate_CheckForUpdate()
 
     "save update date if user runs an update manually
     autocmd BufDelete * if &previewwindow && &ft == "vundle" |
-                \ call g:superupdate#SaveLastUpdate() | endif
+                \ call <SID>superupdate_SaveLastUpdate() | endif
 augroup END
 
-" ----------------------------------------- ( ) - g:superupdate#SaveLastUpdate -
+" ----------------------------------------- ( ) - s:superupdate_SaveLastUpdate -
 " save current timestamp
-function! g:superupdate#SaveLastUpdate()
-    if g:superupdate#warn == 0
+function! s:superupdate_SaveLastUpdate()
+    if g:superupdate_warn == 0
         call INFO("SuperUpdate: update complete")
         call VarSave(s:UPDATE_KEY, s:Timestamp())
     endif
 endfunction
 
-" ------------------------------------------ ( ) - g:superupdate#UpdatePlugins -
+" ------------------------------------------ ( ) - s:superupdate_UpdatePlugins -
 " update plugins
-function! g:superupdate#UpdatePlugins()
-    if g:superupdate#warn == 0
+function! s:superupdate_UpdatePlugins()
+    if g:superupdate_warn == 0
         call INFO("SuperUpdate: update starting")
-        if exists("g:superupdate#command")
-            execute g:superupdate#command
+        if exists("g:superupdate_command")
+            execute g:superupdate_command
         else
             "TODO: detect plugin manager
             "Vundle
@@ -100,26 +100,27 @@ function! g:superupdate#UpdatePlugins()
         endif
     else
         echom "SuperUpdate: Plugins have not been updated in more than: " .
-                    \ g:superupdate#interval . " day(s)"
+                    \ g:superupdate_interval . " day(s)"
     endif
+
+    call <SID>superupdate_SaveLastUpdate()
 endfunction
 
-" ----------------------------------------- ( ) - g:superupdate#CheckForUpdate -
+" ----------------------------------------- ( ) - s:superupdate_CheckForUpdate -
 " check when the last time plugins were automatically updated and
 " update them if it has been more than a week and it is currently the weekend
-function! g:superupdate#CheckForUpdate()
+function! s:superupdate_CheckForUpdate()
     let l:last_update = VarRead(s:UPDATE_KEY)
     if l:last_update != 0 &&
      \ s:Timestamp() - l:last_update < s:UPDATE_INTERVAL ||
-     \ (len(g:superupdate#days) > 0 &&
-     \ index(g:superupdate#days, s:DayOfWeek()) < 0)
-        " only run after update interval and on a day in g:superupdate#days if
-        " g:superupdate#days is not empty
+     \ (len(g:superupdate_days) > 0 &&
+     \ index(g:superupdate_days, s:DayOfWeek()) < 0)
+        " only run after update interval and on a day in g:superupdate_days if
+        " g:superupdate_days is not empty
         " OR if never updated (no update timestamp exists)
         return
     endif
 
-    call g:superupdate#UpdatePlugins()
-    call g:superupdate#SaveLastUpdate()
+    call <SID>superupdate_UpdatePlugins()
 endfunction
 

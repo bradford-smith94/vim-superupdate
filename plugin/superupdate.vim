@@ -1,6 +1,6 @@
 " superupdate.vim
 
-if exists("g:superupdate_included")
+if exists("g:superupdate_included") || (v:version < 700) || &cp
     finish
 endif
 let g:superupdate_included = 1

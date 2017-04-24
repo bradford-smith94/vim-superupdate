@@ -52,5 +52,13 @@ The Ex command used to update plugins.
 Example: `let g:superupdate_command = 'PlugUpdate'` (vim-plug)
 
 =============================================================================
+COMMANDS                                               *superupdate-commands*
+
+`:SuperUpdateGetLastUpdate`
+
+Print the time and date of the last update using the '%c' time format string.
+See |strftime()|.
+
+=============================================================================
 
  vim:tw=78:ft=help:norl:

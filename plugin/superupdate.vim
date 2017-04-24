@@ -86,6 +86,12 @@ function! s:superupdate_SaveLastUpdate()
     endif
 endfunction
 
+" print the last update timestamp
+function! s:superupdate_PrintLastUpdate()
+    let l:last_update = VarRead(s:UPDATE_KEY)
+    echo strftime("%c", l:last_update)
+endfunction
+
 " ------------------------------------------ ( ) - s:superupdate_UpdatePlugins -
 " update plugins
 function! s:superupdate_UpdatePlugins()
@@ -124,3 +130,7 @@ function! s:superupdate_CheckForUpdate()
     call <SID>superupdate_UpdatePlugins()
 endfunction
 
+" =================================================================== commands =
+" user accessible commands
+
+command SuperUpdateGetLastUpdate call <SID>superupdate_PrintLastUpdate()

@@ -1,6 +1,7 @@
 # vim-superupdate
 
-Superupdate integrates with your Vim plugin manager to automatically check for and update your plugins so that you don't have to remember to.
+Superupdate integrates with your Vim plugin manager to automatically check for
+and update your plugins so that you don't have to remember to.
 
 ## Configuration
 
@@ -52,6 +53,18 @@ Default: None (calls |:PluginUpdate| (Vundle))
 The command used to update plugins.
 
 Example: `let g:superupdate_command = 'PlugUpdate'` (vim-plug)
+
+### Skip First
+`'g:superupdate_skip_first'`
+
+Type: boolean
+
+Default: `0`
+
+When this is a non-zero value superupdate will skip trying to update plugins on
+it's first run.
+
+Example `let g:superupdate_skip_first = 1`
 
 ## Help
 Also check out the help page: `:help superupdate`.

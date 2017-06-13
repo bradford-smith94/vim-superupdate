@@ -39,6 +39,12 @@ if !exists("g:superupdate_days")
     let g:superupdate_days = []
 endif
 
+" skip_first - when non-zero don't attempt to update plugins on the first run of
+" superupdate
+if !exists("g:superupdate_skip_first")
+    let g:superupdate_skip_first = 0
+endif
+
 " ==================================================================== helpers =
 
 " ----------------------------------------- ( type = s:INTEGER ) - s:DayOfWeek -
@@ -124,6 +130,9 @@ function! s:superupdate_CheckForUpdate()
         " only run after update interval and on a day in g:superupdate_days if
         " g:superupdate_days is not empty
         " OR if never updated (no update timestamp exists)
+        return
+    elseif l:last_update == 0 && g:superupdate_skip_first != 0
+        call <SID>superupdate_SaveLastUpdate()
         return
     endif
 

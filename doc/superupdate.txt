@@ -51,6 +51,16 @@ The Ex command used to update plugins.
 
 Example: `let g:superupdate_command = 'PlugUpdate'` (vim-plug)
 
+
+                                                 *'g:superupdate_skip_first'*
+Type: boolean
+Default: `0`
+
+When this is a non-zero value superupdate will skip trying to update plugins
+on it's first run.
+
+Example: `let g:superupdate_skip_first = 1`
+
 =============================================================================
 COMMANDS                                               *superupdate-commands*
 

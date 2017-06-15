@@ -47,3 +47,4 @@ augroup END
 " user accessible commands
 
 command SuperUpdateGetLastUpdate call superupdate#PrintLastUpdate()
+command SuperUpdateRunNow call superupdate#UpdatePlugins()

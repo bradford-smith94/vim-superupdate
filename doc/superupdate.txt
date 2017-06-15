@@ -64,10 +64,14 @@ Example: `let g:superupdate_skip_first = 1`
 =============================================================================
 COMMANDS                                               *superupdate-commands*
 
-`:SuperUpdateGetLastUpdate`
+`:SuperUpdateGetLastUpdate`                       *:SuperUpdateGetLastUpdate*
 
 Print the time and date of the last update using the '%c' time format string.
 See |strftime()|.
+
+`:SuperUpdateRunNow`                                     *:SuperUpdateRunNow*
+
+Manually trigger a plugin update through using superupdate.
 
 =============================================================================
 

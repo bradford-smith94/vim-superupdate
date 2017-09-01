@@ -65,17 +65,25 @@ endfunction
 " -------------------------------------------- ( ) - superupdate#UpdatePlugins -
 " update plugins
 function! superupdate#UpdatePlugins()
+    let s:update_error = 0
     if g:superupdate_warn == 0
         call INFO("SuperUpdate: update starting")
         if exists("g:superupdate_command")
             execute g:superupdate_command
-        else
-            "TODO: detect plugin manager
+        elseif globpath(&rtp, "autoload/vundle.vim", 1) !=# ''
             "Vundle
             PluginUpdate
+        elseif globpath(&rtp, "autoload/plug.vim", 1) !=# ''
+            "vim-plug
+            PlugUpdate
+        else
+            echom "SuperUpdate: Error no update command set/found!"
+            let s:update_error = 1
         endif
 
-        call superupdate#SaveLastUpdate()
+        if s:update_error == 0
+            call superupdate#SaveLastUpdate()
+        endif
     else
         echom "SuperUpdate: Plugins have not been updated in more than: " .
                     \ g:superupdate_interval . " day(s)"

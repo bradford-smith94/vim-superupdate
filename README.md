@@ -48,7 +48,7 @@ Example: `let g:superupdate_days = [4, 5, 6]` (Friday, Saturday or Sunday)
 
 Type: string
 
-Default: None (calls |:PluginUpdate| (Vundle))
+Default: None (attempts to autodetect, working for Vundle and vim-plug)
 
 The command used to update plugins.
 

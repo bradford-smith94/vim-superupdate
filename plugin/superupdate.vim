@@ -39,9 +39,7 @@ augroup superupdate_autocmds
     autocmd VimEnter * call superupdate#CheckForUpdate()
 
     "save update date if user runs an update manually
-    autocmd BufDelete * if &previewwindow && &ft == "vundle" |
-                \ call superupdate#SaveLastUpdate() | endif
-    autocmd BufDelete,BufWinLeave * if &ft == "vim-plug" |
+    autocmd BufWinEnter * if @: == 'PluginUpdate' || @: == 'PlugUpdate' |
                 \ call superupdate#SaveLastUpdate() | endif
 augroup END
 

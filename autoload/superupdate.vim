@@ -76,6 +76,9 @@ function! superupdate#UpdatePlugins()
         elseif globpath(&rtp, "autoload/plug.vim", 1) !=# ''
             "vim-plug
             PlugUpdate
+        elseif globpath(&rtp, "plugin/minpac.vim", 1) !=# ''
+            "minpac
+            call minpac#update()
         else
             echom "SuperUpdate: Error no update command set/found!"
             let s:update_error = 1

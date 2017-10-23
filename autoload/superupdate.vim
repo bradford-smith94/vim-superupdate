@@ -11,76 +11,83 @@ let s:HOUR = 60 * s:MINUTE
 let s:DAY = 24 * s:HOUR
 let s:WEEK = 7 * s:DAY
 
-let s:UPDATE_KEY = "superupdate_last_update"
+let s:UPDATE_KEY = 'superupdate_last_update'
 
 " ==================================================================== helpers =
 
 " ------------------------------- ( type = s:INTEGER ) - superupdate#DayOfWeek -
 " obtain the day of week as an integer, three letter abbreviation or full name
-function! superupdate#DayOfWeek ( ... )
+function! superupdate#DayOfWeek ( ... ) abort
     if a:0 > 1
-        call WARN("DayOfWeek expects one or no parameters; found", a:0)
+        call WARN('DayOfWeek expects one or no parameters; found', a:0)
     endif
     let l:type = a:0 > 0 ? a:1 : s:INTEGER
     if l:type == s:INTEGER
-        return strftime("%u") - 1
+        return strftime('%u') - 1
     elseif l:type == s:SHORT
-        return strftime("%a")
+        return strftime('%a')
     elseif l:type == s:LONG
-        return strftime("%A")
+        return strftime('%A')
     endif
-    call WARN("DayOfWeek unknown type", l:type)
+    call WARN('DayOfWeek unknown type', l:type)
     return -1
 endfunction
 
 " ------------------------------------------------ ( ) - superupdate#Timestamp -
 " retrieve timestamp in seconds from epoch
-function! superupdate#Timestamp ( )
-    return str2nr(strftime("%s"))
+function! superupdate#Timestamp ( ) abort
+    return str2nr(strftime('%s'))
 endfunction
 
 " ------------------------------------------- ( ) - superupdate#UpdateInterval -
 " calculate update interval
-function! superupdate#UpdateInterval ( )
+function! superupdate#UpdateInterval ( ) abort
     return g:superupdate_interval * s:DAY
 endfunction
 
 " ================================================================== functions =
+" abort
 
 " ------------------------------------------- ( ) - superupdate#SaveLastUpdate -
 " save current timestamp
-function! superupdate#SaveLastUpdate()
+function! superupdate#SaveLastUpdate() abort
     if g:superupdate_warn == 0
-        call INFO("SuperUpdate: update complete")
+        call INFO('SuperUpdate: update complete')
         call VarSave(s:UPDATE_KEY, superupdate#Timestamp())
     endif
 endfunction
 
 " print the last update timestamp
-function! superupdate#PrintLastUpdate()
+function! superupdate#PrintLastUpdate() abort
     let l:last_update = VarRead(s:UPDATE_KEY)
-    echo strftime("%c", l:last_update)
+    echo strftime('%c', l:last_update)
 endfunction
 
 " -------------------------------------------- ( ) - superupdate#UpdatePlugins -
 " update plugins
-function! superupdate#UpdatePlugins()
+function! superupdate#UpdatePlugins() abort
     let s:update_error = 0
     if g:superupdate_warn == 0
-        call INFO("SuperUpdate: update starting")
-        if exists("g:superupdate_command")
+        call INFO('SuperUpdate: update starting')
+        if exists('g:superupdate_command')
             execute g:superupdate_command
-        elseif globpath(&rtp, "autoload/vundle.vim", 1) !=# ''
+        elseif globpath(&rtp, 'autoload/vundle.vim', 1) !=# ''
             "Vundle
             PluginUpdate
-        elseif globpath(&rtp, "autoload/plug.vim", 1) !=# ''
+        elseif globpath(&rtp, 'autoload/plug.vim', 1) !=# ''
             "vim-plug
             PlugUpdate
-        elseif globpath(&rtp, "plugin/minpac.vim", 1) !=# ''
+        elseif globpath(&rtp, 'autoload/dein.vim', 1) !=# ''
+            "dein
+            call dein#update()
+        elseif globpath(&rtp, 'autoload/neobundle.vim', 1) !=# ''
+            "neobundle
+            NeoBundleUpdate
+        elseif globpath(&rtp, 'plugin/minpac.vim', 1) !=# ''
             "minpac
             call minpac#update()
         else
-            echom "SuperUpdate: Error no update command set/found!"
+            echom 'SuperUpdate: Error no update command set/found!'
             let s:update_error = 1
         endif
 
@@ -88,15 +95,15 @@ function! superupdate#UpdatePlugins()
             call superupdate#SaveLastUpdate()
         endif
     else
-        echom "SuperUpdate: Plugins have not been updated in more than: " .
-                    \ g:superupdate_interval . " day(s)"
+        echom 'SuperUpdate: Plugins have not been updated in more than: ' .
+                    \ g:superupdate_interval . ' day(s)'
     endif
 endfunction
 
 " ------------------------------------------- ( ) - superupdate#CheckForUpdate -
 " check when the last time plugins were automatically updated and
 " update them if it has been more than a week and it is currently the weekend
-function! superupdate#CheckForUpdate()
+function! superupdate#CheckForUpdate() abort
     let l:last_update = VarRead(s:UPDATE_KEY)
     if l:last_update != 0 &&
      \ superupdate#Timestamp() - l:last_update < superupdate#UpdateInterval() ||

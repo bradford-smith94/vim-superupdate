@@ -1,6 +1,6 @@
 " superupdate.vim
 
-if exists("g:superupdate_included") || (v:version < 700) || &cp
+if exists('g:superupdate_included') || (v:version < 700) || &cp
     finish
 endif
 let g:superupdate_included = 1
@@ -10,24 +10,24 @@ runtime ./vim-vimvar/vimvar.vim
 
 " ======================================================================= vars =
 " warn - print a message instead of updating plugins
-if !exists("g:superupdate_warn")
+if !exists('g:superupdate_warn')
     let g:superupdate_warn = 0
 endif
 
 " interval - the number of days between updates
-if !exists("g:superupdate_interval")
+if !exists('g:superupdate_interval')
     let g:superupdate_interval = 7
 endif
 
 " days - list of days when updates are allowed (empty should be the same as all)
 " NOTE: lists require Vim7+
-if !exists("g:superupdate_days")
+if !exists('g:superupdate_days')
     let g:superupdate_days = []
 endif
 
 " skip_first - when non-zero don't attempt to update plugins on the first run of
 " superupdate
-if !exists("g:superupdate_skip_first")
+if !exists('g:superupdate_skip_first')
     let g:superupdate_skip_first = 0
 endif
 
@@ -39,7 +39,8 @@ augroup superupdate_autocmds
     autocmd VimEnter * call superupdate#CheckForUpdate()
 
     "save update date if user runs an update manually
-    autocmd BufWinEnter * if @: == 'PluginUpdate' || @: == 'PlugUpdate' |
+    autocmd BufWinEnter * if @: == 'PluginUpdate' || @: == 'PlugUpdate' ||
+                \ @: == 'NeoBundleUpdate' || @: == 'call dein#update()' |
                 \ call superupdate#SaveLastUpdate() | endif
 augroup END
 

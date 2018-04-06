@@ -76,7 +76,12 @@ function! superupdate#UpdatePlugins() abort
             PluginUpdate
         elseif globpath(&rtp, 'autoload/plug.vim', 1) !=# ''
             "vim-plug
-            PlugUpdate
+            try
+                PlugUpdate
+            catch /^\$GIT_\w* detected\./
+                let s:update_error = 1
+                echom 'SuperUpdate: Cannot update using vim-plug in a git directory'
+            endtry
         elseif globpath(&rtp, 'autoload/dein.vim', 1) !=# ''
             "dein
             call dein#update()
